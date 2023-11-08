@@ -7,8 +7,6 @@ TesseractApi::TesseractApi(const char *language) : api_(std::make_unique<tessera
   }
 }
 
-TesseractApi::TesseractApi(std::string_view language) : TesseractApi(language.data()) {}
-
 TesseractApi::~TesseractApi() { api_->End(); }
 
 auto LoadImage(const char *image_path) -> cv::Mat { return LoadImage(std::string_view(image_path)); }

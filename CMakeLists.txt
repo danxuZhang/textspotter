@@ -54,7 +54,6 @@ include_directories("include/")
 
 set(SOURCE_FILES src/textspotter.cpp)
 
-
 add_library(${THIS} SHARED ${SOURCE_FILES})
 
 target_include_directories(${THIS} INTERFACE "include/")
