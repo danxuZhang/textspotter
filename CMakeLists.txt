@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.15...3.26)
 
 project(
-  ${SKBUILD_PROJECT_NAME}
-  VERSION ${SKBUILD_PROJECT_VERSION}
+    textspotter
+  VERSION 0.1
   LANGUAGES CXX)
+set(THIS textspotter)
+
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
-add_subdirectory(third-party/pybind11)
 
 find_package(OpenCV REQUIRED)
 find_package(Leptonica REQUIRED)
@@ -51,12 +50,11 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-include_directories(include)
+include_directories("include/")
 
-set(SOURCE_FILES src/textspotter_bindings.cpp src/textspotter.cpp)
+set(SOURCE_FILES src/textspotter.cpp)
 
-python_add_library(_core MODULE  ${SOURCE_FILES} WITH_SOABI)
-target_link_libraries(_core PRIVATE pybind11::headers)
-target_compile_definitions(_core PRIVATE VERSION_INFO=${PROJECT_VERSION})
+add_library(${THIS} SHARED ${SOURCE_FILES})
 
-install(TARGETS _core DESTINATION textspotter)
+target_include_directories(${THIS} INTERFACE "include/")
+target_link_libraries(${THIS} PRIVATE ${OpenCV_LIBS} ${Tesseract_LIBRARIES} leptonica)
