@@ -1,3 +1,14 @@
+.vs
+.idea
+.vscode
+
+out/ 
+build/
+cmake-*/
+
+.venv
+venv
+
 # Prerequisites
 *.d
 
