@@ -26,7 +26,28 @@ auto LoadImage(std::string_view image_path) -> cv::Mat {
   return image;
 }
 
-auto Preprocess(const cv::Mat &image) noexcept -> cv::Mat { return image.clone(); }
+auto Preprocess(const cv::Mat &image) noexcept -> cv::Mat {
+  cv::Mat gray_image;
+  if (image.channels() == 3) {
+    cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
+  } else {
+    gray_image = image.clone();
+  }
+
+  cv::Mat inverted_image;
+  cv::bitwise_not(gray_image, inverted_image);
+
+  cv::Mat blurred_image;
+  cv::GaussianBlur(inverted_image, blurred_image, cv::Size(5, 5), 0);
+
+  cv::Mat threshold_image;
+  cv::adaptiveThreshold(blurred_image, threshold_image, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
+
+  // cv::imshow("Processed", threshold_image);
+  // cv::waitKey();
+  // cv::destroyAllWindows();
+  return threshold_image;
+}
 
 auto RecognizeText(const cv::Mat &image, float conf_threshold) noexcept
     -> std::tuple<std::vector<std::string>, std::vector<cv::Rect>, std::vector<float>> {
@@ -74,7 +95,7 @@ auto RecognizeText(const cv::Mat &image, float conf_threshold) noexcept
 }
 
 auto MatchText(const cv::Mat &image, std::string_view target) noexcept -> cv::Point {
-  auto &[texts, boxes, confs] = RecognizeText(image, 70);
+  auto &[texts, boxes, confs] = RecognizeText(image, 0);
 
   int min_distance = INT_MAX;
   std::unique_ptr<const std::string> best_match;
@@ -88,7 +109,10 @@ auto MatchText(const cv::Mat &image, std::string_view target) noexcept -> cv::Po
     std::cout << text << " " << conf << std::endl;
 
     int distance = CalcLevenshteinDistance(text, target);
-    if (distance < min_distance && conf > 0.7) {
+    if (text == target) {
+      return GetRectCenter(box);
+    }
+    if (distance < min_distance && conf > 0.7 && distance < target.size()) {
       min_distance = distance;
       match_box = box;
       best_match = std::make_unique<const std::string>(text);
@@ -151,10 +175,6 @@ auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point {
 
 bool match_text_from_file(const char *image_path, const char *target, int *x, int *y) {
   cv::Mat image = LoadImage(image_path);
-  return match_text(image, target, x, y);
-}
-
-bool match_text(const cv::Mat image, const char *target, int *x, int *y) {
   auto pt = MatchText(image, target);
   *x = pt.x;
   *y = pt.y;

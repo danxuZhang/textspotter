@@ -31,5 +31,4 @@ auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point;
 
 extern "C" {
 _declspec(dllexport) bool match_text_from_file(const char *image_path, const char *target, int *x, int *y);
-_declspec(dllexport) bool match_text(const cv::Mat image, const char *target, int *x, int *y);
 }
