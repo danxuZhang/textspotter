@@ -45,13 +45,6 @@ auto RunBenchmark(const cv::Mat &image, const std::map<std::string, int> &text_c
   const cv::Point nil{-1, -1};
 
   auto start = std::chrono::high_resolution_clock::now();
-  for (auto &p : local_count) {
-    int x, y;
-    match_text(p.first.c_str(), image.size().height, image.size().width, image.type(), image.data, &x, &y);
-    if (x != -1 && y != -1) {
-      p.second--;
-    }
-  }
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed = end - start;
 

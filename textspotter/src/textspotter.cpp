@@ -37,7 +37,8 @@ auto Preprocess(const cv::Mat &image) noexcept -> cv::Mat {
   cv::bitwise_not(gray_image, inverted_image);
 
   cv::Mat blurred_image;
-  cv::GaussianBlur(inverted_image, blurred_image, cv::Size(5, 5), 0);
+  cv::GaussianBlur(gray_image, blurred_image, cv::Size(5, 5), 0);
+  // cv::GaussianBlur(inverted_image, blurred_image, cv::Size(5, 5), 0);
 
   cv::Mat threshold_image;
   cv::adaptiveThreshold(blurred_image, threshold_image, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
@@ -177,20 +178,4 @@ auto CalcLevenshteinDistance(std::string_view s1, std::string_view s2) noexcept 
 
 auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point {
   return {rect.x + rect.width / 2, rect.y + rect.height / 2};
-}
-
-bool match_text_from_file(const char *image_path, const char *target, int *x, int *y) {
-  cv::Mat image = LoadImage(image_path);
-  auto pt = MatchText(image, target);
-  *x = pt.x;
-  *y = pt.y;
-  return true;
-}
-
-bool match_text(const char *text, int height, int width, int type, void *data, int *x, int *y) {
-  cv::Mat image{height, width, type, data};
-  auto pt = MatchText(image, text);
-  *x = pt.x;
-  *y = pt.y;
-  return true;
 }

@@ -101,15 +101,3 @@ auto CalcLevenshteinDistance(std::string_view s1, std::string_view s2) noexcept 
  */
 auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point;
 
-extern "C" {
-/**
- * @brief Matches text from a file and returns the coordinates of the match.
- * @param image_path Path to the image file containing the text.
- * @param target The text to search for within the image.
- * @param x Pointer to an integer to store the x-coordinate of the match.
- * @param y Pointer to an integer to store the y-coordinate of the match.
- * @return True if the text was successfully matched and coordinates set; otherwise, false.
- */
-_declspec(dllexport) bool match_text_from_file(const char *image_path, const char *target, int *x, int *y);
-_declspec(dllexport) bool match_text(const char *target, int height, int width, int type, void *data, int *x, int *y);
-}
