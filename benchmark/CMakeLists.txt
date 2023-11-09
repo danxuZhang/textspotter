@@ -1,6 +1,6 @@
 set(THIS benchmark)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp "benchmark.cpp" "benchmark.hpp")
 
 add_executable(${THIS} ${SOURCE_FILES})
 

@@ -7,6 +7,7 @@
 #include <map>
 #include <opencv2/opencv.hpp>
 
+#include "benchmark.hpp"
 #include "textspotter/textspotter.hpp"
 
 namespace fs = std::filesystem;
@@ -40,31 +41,6 @@ auto LoadImage(const std::string &file_path) -> cv::Mat {
   return image;
 }
 
-auto RunBenchmark(const cv::Mat &image, const std::map<std::string, int> &text_count) {
-  auto local_count = text_count;
-  const cv::Point nil{-1, -1};
-
-  auto start = std::chrono::high_resolution_clock::now();
-  auto end = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> elapsed = end - start;
-
-  int total_match = 0;
-  int total_text = 0;
-  for (const auto &p : local_count) {
-    const std::string &text = p.first;
-    int total = text_count.at(text);
-    int matched = p.second;
-    if (matched == total) {
-      total_match++;
-    }
-    total_text++;
-    fmt::println("matched {} out of {} for text {}", matched, total, text);
-  }
-
-  fmt::println("In total, matched {} out of {} ({}\%) in {} seconds", total_match, total_text,
-               (double)total_match / total_text * 100, elapsed.count());
-}
-
 int main(int argc, char *argv[]) {
   argparse::ArgumentParser parser("TextSpotter Benchmark");
   parser.add_argument("--image").help("path to image file");
@@ -84,7 +60,7 @@ int main(int argc, char *argv[]) {
   cv::Mat image = LoadImage(image_path);
   std::map<std::string, int> text_count = ReadTargets(text_path);
 
-  RunBenchmark(image, text_count);
+  BenchmarkRecognizeAccuracy(image, text_count);
 
   return 0;
 }

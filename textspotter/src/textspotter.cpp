@@ -37,8 +37,7 @@ auto Preprocess(const cv::Mat &image) noexcept -> cv::Mat {
   cv::bitwise_not(gray_image, inverted_image);
 
   cv::Mat blurred_image;
-  cv::GaussianBlur(gray_image, blurred_image, cv::Size(5, 5), 0);
-  // cv::GaussianBlur(inverted_image, blurred_image, cv::Size(5, 5), 0);
+  cv::GaussianBlur(inverted_image, blurred_image, cv::Size(5, 5), 0);
 
   cv::Mat threshold_image;
   cv::adaptiveThreshold(blurred_image, threshold_image, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
