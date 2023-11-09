@@ -21,11 +21,11 @@ include(FetchContent)
 
 # Fetch cxxopts
 FetchContent_Declare(
-  cxxopts
-  GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
-  GIT_TAG        v3.1.1
+  argparse
+  GIT_REPOSITORY https://github.com/p-ranav/argparse
+  GIT_TAG        v3.0
 )
-FetchContent_MakeAvailable(cxxopts)
+FetchContent_MakeAvailable(argparse)
 
 # Fetch fmt
 FetchContent_Declare(
@@ -54,7 +54,9 @@ include_directories("include/")
 
 set(SOURCE_FILES src/textspotter.cpp)
 
-add_library(${THIS} SHARED ${SOURCE_FILES})
+add_library(textspotter SHARED ${SOURCE_FILES})
 
-target_include_directories(${THIS} INTERFACE "include/")
-target_link_libraries(${THIS} PRIVATE ${OpenCV_LIBS} ${Tesseract_LIBRARIES} leptonica)
+target_link_libraries(textspotter PRIVATE ${OpenCV_LIBS} ${Tesseract_LIBRARIES} leptonica fmt::fmt)
+
+
+add_subdirectory(benchmark/)

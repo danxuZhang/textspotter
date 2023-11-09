@@ -78,6 +78,15 @@ auto MatchText(const cv::Mat &image, const char *target) noexcept -> cv::Point;
 auto MatchText(const char *image_path, const char *target) noexcept -> cv::Point;
 
 /**
+ * @brief Determines if two strings are matching. Matching condition may be exact match or
+ * edit distance less than a threshold (1/4 length of the shorter string).
+ * @param s1 The first string as a std::string_view.
+ * @param s2 The second string as a std::string_view.
+ * @return An integer representing the Levenshtein distance (edit distance) between the two strings.
+ */
+auto IsMatch(std::string_view s1, std::string_view s2) noexcept -> bool;
+
+/**
  * @brief Calculates the Levenshtein distance between two strings.
  * @param s1 The first string as a std::string_view.
  * @param s2 The second string as a std::string_view.
@@ -102,4 +111,5 @@ extern "C" {
  * @return True if the text was successfully matched and coordinates set; otherwise, false.
  */
 _declspec(dllexport) bool match_text_from_file(const char *image_path, const char *target, int *x, int *y);
+_declspec(dllexport) bool match_text(const char *target, int height, int width, int type, void *data, int *x, int *y);
 }

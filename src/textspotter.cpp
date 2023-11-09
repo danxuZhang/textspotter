@@ -110,7 +110,7 @@ auto MatchText(const cv::Mat &image, std::string_view target) noexcept -> cv::Po
     if (text == target) {
       return GetRectCenter(box);
     }
-    if (distance < min_distance && conf > 0.7 && distance < target.size()) {
+    if (IsMatch(text, target)) {
       min_distance = distance;
       match_box = box;
       best_match = std::make_unique<const std::string>(text);
@@ -119,7 +119,7 @@ auto MatchText(const cv::Mat &image, std::string_view target) noexcept -> cv::Po
   }
 
   if (best_match == nullptr) {
-    return {};
+    return {-1, -1};
   }
 
   return GetRectCenter(match_box);
@@ -132,6 +132,16 @@ auto MatchText(const cv::Mat &image, const char *target) noexcept -> cv::Point {
 auto MatchText(const char *image_path, const char *target) noexcept -> cv::Point {
   cv::Mat image = LoadImage(image_path);
   return MatchText(image, {target});
+}
+
+auto IsMatch(std::string_view s1, std::string_view s2) noexcept -> bool {
+  if (s1 == s2) {
+    return true;
+  }
+
+  int min_length = std::min(s1.length(), s2.length());
+  int distance = CalcLevenshteinDistance(s1, s2);
+  return distance < 1 / 4 * min_length;
 }
 
 auto CalcLevenshteinDistance(std::string_view s1, std::string_view s2) noexcept -> int {
@@ -174,6 +184,14 @@ auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point {
 bool match_text_from_file(const char *image_path, const char *target, int *x, int *y) {
   cv::Mat image = LoadImage(image_path);
   auto pt = MatchText(image, target);
+  *x = pt.x;
+  *y = pt.y;
+  return true;
+}
+
+bool match_text(const char *text, int height, int width, int type, void *data, int *x, int *y) {
+  cv::Mat image{height, width, type, data};
+  auto pt = MatchText(image, text);
   *x = pt.x;
   *y = pt.y;
   return true;
