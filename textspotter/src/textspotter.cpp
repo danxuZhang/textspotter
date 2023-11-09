@@ -6,6 +6,7 @@ TesseractApi::TesseractApi(const char *language) : api_(std::make_unique<tessera
     throw std::runtime_error{"cannot initialize tesseract api"};
   }
   api_->SetVariable("debug_file", "tesseract.log");
+  // api_->SetVariable("lstm_choice_mode", "2");
 }
 
 TesseractApi::~TesseractApi() { api_->End(); }
@@ -26,26 +27,27 @@ auto LoadImage(std::string_view image_path) -> cv::Mat {
 }
 
 auto Preprocess(const cv::Mat &image) noexcept -> cv::Mat {
-  cv::Mat gray_image;
+  cv::Mat processed_image;
   if (image.channels() == 3) {
-    cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(image, processed_image, cv::COLOR_BGR2GRAY);
+  } else if (image.channels() == 4) {
+    cv::cvtColor(image, processed_image, cv::COLOR_BGRA2GRAY);
   } else {
-    gray_image = image.clone();
+    processed_image = image;
   }
 
-  cv::Mat inverted_image;
-  cv::bitwise_not(gray_image, inverted_image);
+  cv::bitwise_not(processed_image, processed_image);
 
-  cv::Mat blurred_image;
-  cv::GaussianBlur(inverted_image, blurred_image, cv::Size(5, 5), 0);
+  cv::GaussianBlur(processed_image, processed_image, cv::Size(3, 3), 0);
 
-  cv::Mat threshold_image;
-  cv::adaptiveThreshold(blurred_image, threshold_image, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
+  cv::adaptiveThreshold(processed_image, processed_image, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 7, 2);
 
-  // cv::imshow("Processed", threshold_image);
-  // cv::waitKey();
-  // cv::destroyAllWindows();
-  return threshold_image;
+  cv::fastNlMeansDenoising(processed_image, processed_image);
+
+  cv::imshow("Processed", processed_image);
+  cv::waitKey();
+  cv::destroyAllWindows();
+  return processed_image;
 }
 
 auto RecognizeText(const cv::Mat &image, float conf_threshold) noexcept
@@ -133,13 +135,22 @@ auto MatchText(const char *image_path, const char *target) noexcept -> cv::Point
 }
 
 auto IsMatch(std::string_view s1, std::string_view s2) noexcept -> bool {
-  if (s1 == s2) {
+  std::string s1_lower(s1);
+  std::string s2_lower(s2);
+  for (auto &c : s1_lower) {
+    c = std::tolower(c);
+  }
+  for (auto &c : s2_lower) {
+    c = std::tolower(c);
+  }
+
+  if (s1_lower == s2_lower) {
     return true;
   }
 
-  int min_length = std::min(s1.length(), s2.length());
-  int distance = CalcLevenshteinDistance(s1, s2);
-  return distance < 1 / 4 * min_length;
+  int min_length = std::min(s1_lower.length(), s2_lower.length());
+  int distance = CalcLevenshteinDistance(s1_lower, s2_lower);
+  return distance < (1 / 2 * min_length);
 }
 
 auto CalcLevenshteinDistance(std::string_view s1, std::string_view s2) noexcept -> int {
