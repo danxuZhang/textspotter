@@ -50,13 +50,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-include_directories("include/")
-
-set(SOURCE_FILES src/textspotter.cpp)
-
-add_library(textspotter SHARED ${SOURCE_FILES})
-
-target_link_libraries(textspotter PRIVATE ${OpenCV_LIBS} ${Tesseract_LIBRARIES} leptonica fmt::fmt)
-
+add_subdirectory(textspotter/)
 
 add_subdirectory(benchmark/)
