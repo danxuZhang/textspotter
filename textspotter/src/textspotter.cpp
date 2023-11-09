@@ -5,6 +5,7 @@ TesseractApi::TesseractApi(const char *language) : api_(std::make_unique<tessera
   if (api_->Init(NULL, language) == -1) {
     throw std::runtime_error{"cannot initialize tesseract api"};
   }
+  api_->SetVariable("debug_file", "tesseract.log");
 }
 
 TesseractApi::~TesseractApi() { api_->End(); }
@@ -104,8 +105,6 @@ auto MatchText(const cv::Mat &image, std::string_view target) noexcept -> cv::Po
     const cv::Rect box = boxes[i];
     float conf = confs[i];
 
-    std::cout << text << " " << conf << std::endl;
-
     int distance = CalcLevenshteinDistance(text, target);
     if (text == target) {
       return GetRectCenter(box);
@@ -114,7 +113,6 @@ auto MatchText(const cv::Mat &image, std::string_view target) noexcept -> cv::Po
       min_distance = distance;
       match_box = box;
       best_match = std::make_unique<const std::string>(text);
-      std::cout << "match set to " << *best_match << std::endl;
     }
   }
 

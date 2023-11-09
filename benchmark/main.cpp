@@ -11,23 +11,6 @@
 
 namespace fs = std::filesystem;
 
-class ScopedTimer {
- public:
-  ScopedTimer(const std::string &name) : m_name(name), m_start(std::chrono::high_resolution_clock::now()) {
-    std::cout << "Timer \"" << m_name << "\" started." << std::endl;
-  }
-
-  ~ScopedTimer() {
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - m_start;
-    std::cout << "Timer \"" << m_name << "\" stopped. Elapsed time: " << elapsed.count() << " seconds." << std::endl;
-  }
-
- private:
-  std::string m_name;
-  std::chrono::time_point<std::chrono::high_resolution_clock> m_start;
-};
-
 auto ReadTargets(const std::string &file_path) -> std::map<std::string, int> {
   if (!fs::exists(file_path) || fs::is_directory(file_path)) {
     throw std::invalid_argument("file at path " + file_path + " does not exist");
@@ -85,8 +68,8 @@ auto RunBenchmark(const cv::Mat &image, const std::map<std::string, int> &text_c
     fmt::println("matched {} out of {} for text {}", matched, total, text);
   }
 
-  fmt::println("In total, matched {} out of {} ({}\%)", total_match, total_text,
-               (double)total_match / total_text * 100);
+  fmt::println("In total, matched {} out of {} ({}\%) in {} seconds", total_match, total_text,
+               (double)total_match / total_text * 100, elapsed.count());
 }
 
 int main(int argc, char *argv[]) {
