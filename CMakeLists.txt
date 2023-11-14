@@ -9,13 +9,23 @@ set(THIS textspotter)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Check if pkg-config is available
+find_package(PkgConfig)
+
+# If pkg-config is found, use pkg_search_module
+if(PkgConfig_FOUND)
+    pkg_search_module(Tesseract REQUIRED tesseract)
+    pkg_search_module(LEPTONICA REQUIRED lept)
+else()
+    # If pkg-config is not found, use find_package
+    find_package(Leptonica REQUIRED)
+    find_package(Tesseract REQUIRED)
+    IF (WIN32)
+        link_directories("C:\\Program Files (x86)\\tesseract\\lib")
+    ENDIF()
+endif()
 
 find_package(OpenCV REQUIRED)
-find_package(Leptonica REQUIRED)
-find_package(Tesseract REQUIRED)
-IF (WIN32)
-    link_directories("C:\\Program Files (x86)\\tesseract\\lib")
-ENDIF()
 
 include(FetchContent)
 
