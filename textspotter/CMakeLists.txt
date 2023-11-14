@@ -1,4 +1,9 @@
-set(SOURCE_FILES src/textspotter.cpp)
+set(SOURCE_FILES
+        src/textspotter.cpp
+        src/ocr.cpp
+        src/utility.cpp
+        src/text_detection.cpp
+)
 
 include_directories("include/")
 
