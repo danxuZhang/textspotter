@@ -61,5 +61,6 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_subdirectory(textspotter/)
-add_subdirectory(lib4c/)
-add_subdirectory(benchmark/)
+add_subdirectory(c_bindings/)
+add_subdirectory(tools/benchmark/)
+# add_subdirectory(tools/textspotter_cli/)

@@ -1,4 +1,5 @@
-#include "lib4c.hpp"
+#include "textspotter/textspotter.hpp"
+#include "c_bind.hpp"
 
 bool match_text_from_file(const char *image_path, const char *target, int *x, int *y) {
   cv::Mat image = LoadImage(image_path);
