@@ -37,4 +37,3 @@ auto MatchText(const char *image_path, const char *target) noexcept -> cv::Point
   const cv::Mat image = LoadImage(image_path);
   return MatchText(image, {target});
 }
-

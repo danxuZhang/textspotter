@@ -13,7 +13,6 @@ TesseractApi::TesseractApi(const char *language)
 
 TesseractApi::~TesseractApi() { api_->End(); }
 
-
 auto RecognizeText(const cv::Mat &image, const float conf_threshold) noexcept
   -> std::tuple<std::vector<std::string>, std::vector<cv::Rect>, std::vector<float>> {
   if (image.empty()) {
@@ -24,16 +23,16 @@ auto RecognizeText(const cv::Mat &image, const float conf_threshold) noexcept
 
   const auto processed_image = Preprocess(image);
 
-  tesseract.api_->SetImage((uchar *)processed_image.data, processed_image.size().width, processed_image.size().height,
+  tesseract.api_->SetImage(processed_image.data, processed_image.size().width, processed_image.size().height,
                            processed_image.channels(), processed_image.step1());
-  tesseract.api_->Recognize(0);
+  tesseract.api_->Recognize(nullptr);
 
   std::vector<cv::Rect> boxes;
   std::vector<std::string> texts;
   std::vector<float> confs;
 
-  auto it = tesseract.api_->GetIterator();
-  const tesseract::PageIteratorLevel level = tesseract::RIL_WORD;
+  const auto it = tesseract.api_->GetIterator();
+  constexpr tesseract::PageIteratorLevel level = tesseract::RIL_WORD;
 
   if (!it) {
     return {};

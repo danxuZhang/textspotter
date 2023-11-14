@@ -9,6 +9,7 @@
  * @return A cv::Mat object containing the loaded image.
  */
 auto LoadImage(const char *image_path) -> cv::Mat;
+
 /**
  * @brief Loads an image from a file path into an OpenCV matrix (cv::Mat).
  * @param image_path The path to the image file as a std::string_view.
