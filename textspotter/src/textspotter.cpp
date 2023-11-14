@@ -96,7 +96,7 @@ auto RecognizeText(const cv::Mat &image, float conf_threshold) noexcept
 }
 
 auto MatchText(const cv::Mat &image, std::string_view target) noexcept -> cv::Point {
-  auto &[texts, boxes, confs] = RecognizeText(image, 0);
+  const auto &[texts, boxes, confs] = RecognizeText(image, 0);
 
   int min_distance = INT_MAX;
   std::unique_ptr<const std::string> best_match;
