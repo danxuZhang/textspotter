@@ -3,12 +3,14 @@
 #include <opencv2/opencv.hpp>
 
 #include "textspotter/textspotter.hpp"
+#include "textspotter/utility.hpp"
 
 int main(int argc, char *argv[]) {
   argparse::ArgumentParser parser("TextSpotterCLI");
   parser.add_argument("image").help("path to image file");
   parser.add_argument("--detect").help("detect text");
   parser.add_argument("--ocr").help("perform ocr");
+  parser.add_argument("--dtm").help("east detection model path");
 
   try {
     parser.parse_args(argc, argv);
@@ -19,18 +21,15 @@ int main(int argc, char *argv[]) {
   }
 
   const auto image_path = parser.get<std::string>("image");
+  const auto model_path = parser.get<std::string>("--dtm");
 
   cv::Mat image = LoadImage(image_path);
-  const auto &[texts, boxes, confs] = RecognizeText(image, 0);
 
-  for (const auto &box : boxes) {
-    cv::rectangle(image, box, cv::Scalar(0, 255, 0));
-  }
+  auto single_start = std::chrono::high_resolution_clock::now();
+  DetectText(image, model_path.c_str(), false);
+  auto single_end = std::chrono::high_resolution_clock ::now();
+  auto single_thread_elapsed = single_end - single_start;
+  fmt::println("Single Thread: {} seconds", single_thread_elapsed.count());
 
-  // cv::namedWindow("TextSpotterCLI", cv::WINDOW_AUTOSIZE);
-  cv::imshow("TextSpotterCLI", image);
-  cv::waitKey();
-
-  cv::destroyAllWindows();
   return 0;
 }

@@ -1,7 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <opencv2/core.hpp>
 #include <opencv2/dnn.hpp>
+
+struct DetectionResult {
+  cv::Rect box_;
+  float conf_;
+};
 
 class EastTextDetector {
  public:
@@ -13,7 +19,7 @@ class EastTextDetector {
 
   ~EastTextDetector() = default;
 
-  auto detect(const cv::Mat &image) const noexcept -> std::tuple<std::vector<cv::Rect>, std::vector<float>>;
+  auto detect(const cv::Mat &image) const noexcept -> std::vector<DetectionResult>;
 
  private:
   std::unique_ptr<cv::dnn::TextDetectionModel_EAST> detector_;

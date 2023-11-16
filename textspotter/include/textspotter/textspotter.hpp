@@ -1,11 +1,10 @@
 #pragma once
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
 #include <string>
 
-#include "textspotter/utility.hpp"
-#include "textspotter/text_detection.hpp"
-#include "textspotter/ocr.hpp"
+auto DetectText(const cv::Mat &image, const char *model_path = "frozen_east_text_detection.pb",
+                bool display = false) noexcept -> void;
 
 /**
  * @brief Matches a specified text string within an image and returns the location.

@@ -11,8 +11,7 @@ EastTextDetector::EastTextDetector(const char *model_path, float conf_threshold,
 EastTextDetector::EastTextDetector(std::unique_ptr<cv::dnn::TextDetectionModel_EAST> detector)
     : detector_(std::move(detector)) {}
 
-auto EastTextDetector::detect(const cv::Mat &image) const noexcept
-    -> std::tuple<std::vector<cv::Rect>, std::vector<float>> {
+auto EastTextDetector::detect(const cv::Mat &image) const noexcept -> std::vector<DetectionResult> {
   if (image.empty()) {
     return {};
   }
@@ -21,13 +20,14 @@ auto EastTextDetector::detect(const cv::Mat &image) const noexcept
   std::vector<float> confidences;
   detector_->detect(image, detections, confidences);
 
-  std::vector<cv::Rect> boxes;
+  std::vector<DetectionResult> result;
 
-  std::for_each(detections.begin(), detections.end(), [&boxes](const std::vector<cv::Point> &detection) {
+  for (size_t i = 0; i < detections.size(); ++i) {
+    const auto &detection = detections[i];
     cv::Point top_left = detection[1];
     cv::Point bot_right = detection[3];
-    boxes.emplace_back(top_left, bot_right);
-  });
+    result.push_back({{top_left, bot_right}, confidences[i]});
+  }
 
-  return {boxes, confidences};
+  return result;
 }

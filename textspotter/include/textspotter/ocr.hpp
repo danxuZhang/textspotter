@@ -4,6 +4,13 @@
 
 #include <memory>
 #include <opencv2/core.hpp>
+#include <optional>
+
+struct OcrResult {
+  std::string text_;
+  cv::Rect box_;
+  float conf_;
+};
 
 /**
  * @class TesseractApi
@@ -12,7 +19,7 @@
  * @details It initializes the Tesseract API with the specified language.
  */
 class TesseractApi {
-public:
+ public:
   /**
    * @brief Constructs a new Tesseract API instance using the default or provided language.
    * @param language The language code for OCR. Defaults to English ("eng") if not specified.
@@ -30,6 +37,5 @@ public:
  * @return A tuple containing a vector of recognized strings, their corresponding bounding rectangles, and confidence
  * scores.
  */
-auto RecognizeText(const cv::Mat &image, float conf_threshold) noexcept
-  -> std::tuple<std::vector<std::string>, std::vector<cv::Rect>, std::vector<float>>;
-
+auto RecognizeText(const cv::Mat &image, float conf_threshold, std::optional<cv::Rect> roi = std::nullopt) noexcept
+    -> std::vector<OcrResult>;

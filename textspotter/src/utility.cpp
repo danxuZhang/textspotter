@@ -38,9 +38,9 @@ auto Preprocess(const cv::Mat &image) noexcept -> cv::Mat {
 
   cv::fastNlMeansDenoising(processed_image, processed_image);
 
-  cv::imshow("Processed", processed_image);
-  cv::waitKey();
-  cv::destroyAllWindows();
+  //  cv::imshow("processed", processed_image);
+  //  cv::waitKey();
+  //  cv::destroyAllWindows();
   return processed_image;
 }
 
