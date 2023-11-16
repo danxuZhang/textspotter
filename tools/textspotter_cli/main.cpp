@@ -5,12 +5,47 @@
 #include "textspotter/textspotter.hpp"
 #include "textspotter/utility.hpp"
 
+void benchmark(const cv::Mat &image, const char *model_path) {
+  std::vector<DetectReadResult> res1;
+  {
+    ScopedTimer timer("SingleThread");
+    res1 = DetectReadText(image, model_path, false);
+  }
+  fmt::println("Detect and read {} words", res1.size());
+
+  std::vector<DetectReadResult> res2;
+  {
+    ScopedTimer timer("MultiThread");
+    res2 = DetectReadTextMultiThread(image, model_path, false);
+  }
+  fmt::println("Detect and read {} words", res2.size());
+
+  std::map<std::string, int> freq;
+  for (const auto &r : res1) {
+    freq[r.text_]++;
+  }
+  for (const auto &r : res2) {
+    freq[r.text_]--;
+  }
+
+  bool has_mismatched = false;
+  for (const auto &p : freq) {
+    if (p.second != 0) {
+      has_mismatched = true;
+      fmt::println(stderr, "Mismatched in word:{}", p.first);
+    }
+  }
+
+  if (!has_mismatched) {
+    fmt::println("No mismatch between single and multi thread algo!");
+  }
+}
+
 int main(int argc, char *argv[]) {
   argparse::ArgumentParser parser("TextSpotterCLI");
   parser.add_argument("image").help("path to image file");
-  parser.add_argument("--detect").help("detect text");
-  parser.add_argument("--ocr").help("perform ocr");
   parser.add_argument("--dtm").help("east detection model path");
+  parser.add_argument("--benchmark").help("run benchmark");
 
   try {
     parser.parse_args(argc, argv);
@@ -25,11 +60,16 @@ int main(int argc, char *argv[]) {
 
   cv::Mat image = LoadImage(image_path);
 
-  auto single_start = std::chrono::high_resolution_clock::now();
-  DetectText(image, model_path.c_str(), false);
-  auto single_end = std::chrono::high_resolution_clock ::now();
-  auto single_thread_elapsed = single_end - single_start;
-  fmt::println("Single Thread: {} seconds", single_thread_elapsed.count());
+  std::vector<DetectReadResult> res;
+  {
+    ScopedTimer timer("TextSpotter");
+    res = DetectReadTextMultiThread(image, model_path.c_str(), true);
+  }
+
+  for (const auto &r : res) {
+    const auto center = GetRectCenter(r.bounding_box_);
+    fmt::println("({}, {}): {}", center.x, center.y, r.text_);
+  }
 
   return 0;
 }

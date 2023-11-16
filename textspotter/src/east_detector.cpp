@@ -1,7 +1,7 @@
-#include "textspotter/text_detection.hpp"
+#include "textspotter/east_detector.hpp"
 
 EastTextDetector::EastTextDetector(const char *model_path, float conf_threshold, float nms_threshold, int width,
-                                   int height, double detect_scale, cv::Scalar detect_mean, bool swap_rb)
+                                   int height, double detect_scale, const cv::Scalar &detect_mean, bool swap_rb)
     : detector_(std::make_unique<cv::dnn::TextDetectionModel_EAST>(model_path)) {
   detector_->setConfidenceThreshold(conf_threshold);
   detector_->setNMSThreshold(nms_threshold);
@@ -11,7 +11,7 @@ EastTextDetector::EastTextDetector(const char *model_path, float conf_threshold,
 EastTextDetector::EastTextDetector(std::unique_ptr<cv::dnn::TextDetectionModel_EAST> detector)
     : detector_(std::move(detector)) {}
 
-auto EastTextDetector::detect(const cv::Mat &image) const noexcept -> std::vector<DetectionResult> {
+auto EastTextDetector::detect(const cv::Mat &image) const noexcept -> std::vector<TextDetectionResult> {
   if (image.empty()) {
     return {};
   }
@@ -20,7 +20,7 @@ auto EastTextDetector::detect(const cv::Mat &image) const noexcept -> std::vecto
   std::vector<float> confidences;
   detector_->detect(image, detections, confidences);
 
-  std::vector<DetectionResult> result;
+  std::vector<TextDetectionResult> result;
 
   for (size_t i = 0; i < detections.size(); ++i) {
     const auto &detection = detections[i];

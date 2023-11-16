@@ -2,10 +2,14 @@
 
 #include <opencv2/core.hpp>
 #include <string>
+#include <vector>
+#include "result_type.hpp"
 
-auto DetectText(const cv::Mat &image, const char *model_path = "frozen_east_text_detection.pb",
-                bool display = false) noexcept -> void;
+auto DetectReadText(const cv::Mat &image, const char *model_path = "frozen_east_text_detection.pb",
+                    bool display = false) noexcept -> std::vector<DetectReadResult>;
 
+auto DetectReadTextMultiThread(const cv::Mat &image, const char *model_path = "frozen_east_text_detection.pb",
+                               bool display = false) noexcept -> std::vector<DetectReadResult>;
 /**
  * @brief Matches a specified text string within an image and returns the location.
  * @param image The image as a cv::Mat in which to match the text.

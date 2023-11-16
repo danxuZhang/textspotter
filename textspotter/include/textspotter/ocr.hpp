@@ -6,11 +6,7 @@
 #include <opencv2/core.hpp>
 #include <optional>
 
-struct OcrResult {
-  std::string text_;
-  cv::Rect box_;
-  float conf_;
-};
+#include "textspotter/result_type.hpp"
 
 /**
  * @class TesseractApi

@@ -1,7 +1,23 @@
 #pragma once
 
+#include <fmt/core.h>
+#include <chrono>
 #include <opencv2/core/core.hpp>
 #include <string>
+
+class ScopedTimer {
+ public:
+  explicit ScopedTimer(const char *name = "") : name_(name), start_(std::chrono::high_resolution_clock::now()) {}
+  ~ScopedTimer() {
+    const auto end = std::chrono::high_resolution_clock::now();
+    const auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end - start_);
+    fmt::println("Duration of timer {}: {}", name_, time_span.count());
+  }
+
+ private:
+  std::string_view name_;
+  std::chrono::high_resolution_clock::time_point start_;
+};
 
 /**
  * @brief Loads an image from a file path into an OpenCV matrix (cv::Mat).
@@ -23,15 +39,6 @@ auto LoadImage(std::string_view image_path) -> cv::Mat;
  * @return A cv::Mat object containing the preprocessed image.
  */
 auto Preprocess(const cv::Mat &image) noexcept -> cv::Mat;
-
-/**
- * @brief Determines if two strings are matching. Matching condition may be exact match or
- * edit distance less than a threshold (1/4 length of the shorter string).
- * @param s1 The first string as a std::string_view.
- * @param s2 The second string as a std::string_view.
- * @return An integer representing the Levenshtein distance (edit distance) between the two strings.
- */
-auto IsMatch(std::string_view s1, std::string_view s2) noexcept -> bool;
 
 /**
  * @brief Calculates the Levenshtein distance between two strings.

@@ -2,7 +2,7 @@ set(SOURCE_FILES
         src/textspotter.cpp
         src/ocr.cpp
         src/utility.cpp
-        src/text_detection.cpp
+        src/east_detector.cpp
 )
 
 include_directories("include/")

@@ -44,25 +44,6 @@ auto Preprocess(const cv::Mat &image) noexcept -> cv::Mat {
   return processed_image;
 }
 
-inline auto IsMatch(std::string_view s1, std::string_view s2) noexcept -> bool {
-  std::string s1_lower(s1);
-  std::string s2_lower(s2);
-  for (auto &c : s1_lower) {
-    c = std::tolower(c);
-  }
-  for (auto &c : s2_lower) {
-    c = std::tolower(c);
-  }
-
-  if (s1_lower == s2_lower) {
-    return true;
-  }
-
-  int min_length = std::min(s1_lower.length(), s2_lower.length());
-  int distance = CalcLevenshteinDistance(s1_lower, s2_lower);
-  return distance < (1 / 2 * min_length);
-}
-
 auto CalcLevenshteinDistance(std::string_view s1, std::string_view s2) noexcept -> int {
   if (s1.empty()) {
     return s2.size();
