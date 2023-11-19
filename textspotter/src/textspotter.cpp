@@ -11,10 +11,10 @@
 #include "textspotter/result_type.hpp"
 #include "textspotter/utility.hpp"
 
-auto DetectReadText(const cv::Mat &image, const char *model_path, bool display) noexcept
+auto DetectReadText(const cv::Mat &image, std::string_view model_path, bool display) noexcept
     -> std::vector<DetectReadResult> {
   cv::Mat target = image.clone();
-  const EastTextDetector detector(model_path);
+  const EastTextDetector detector(model_path.data());
   const std::vector<TextDetectionResult> detection_results = detector.detect(image);
 
   std::vector<DetectReadResult> res;
@@ -41,10 +41,10 @@ auto DetectReadText(const cv::Mat &image, const char *model_path, bool display) 
   return res;
 }
 
-auto DetectReadTextMultiThread(const cv::Mat &image, const char *model_path, bool display) noexcept
+auto DetectReadTextMultiThread(const cv::Mat &image, std::string_view model_path, bool display) noexcept
     -> std::vector<DetectReadResult> {
   cv::Mat target = image.clone();
-  const EastTextDetector detector(model_path);
+  const EastTextDetector detector(model_path.data());
   const std::vector<TextDetectionResult> detection_results = detector.detect(image);
 
   std::vector<std::future<std::vector<OcrResult>>> future_results;
@@ -74,13 +74,24 @@ auto DetectReadTextMultiThread(const cv::Mat &image, const char *model_path, boo
   return results;
 }
 
-auto MatchText(const cv::Mat &image, std::string_view target) noexcept -> cv::Point { return {}; }
+auto MatchWord(const cv::Mat &image, std::string_view target, std::string_view model_path) noexcept -> cv::Point {
+  auto is_match = [](std::string_view s1, std::string_view s2) -> bool {
+    if (s1 == s2) {
+      return true;
+    }
 
-auto MatchText(const cv::Mat &image, const char *target) noexcept -> cv::Point {
-  return MatchText(image, std::string_view(target));
-}
+    const int dist = CalcLevenshteinDistance(s1, s2);
+    const size_t min_len = std::min(s1.length(), s2.length());
+    return dist < 1 / 2 * min_len;
+  };
 
-auto MatchText(const char *image_path, const char *target) noexcept -> cv::Point {
-  const cv::Mat image = LoadImage(image_path);
-  return MatchText(image, target);
+  const auto &result = DetectReadTextMultiThread(image, model_path);
+  for (const auto &r : result) {
+    const auto &[text, box] = r;
+    if (is_match(target, text)) {
+      return GetRectCenter(box);
+    }
+  }
+
+  return {-1, -1};
 }

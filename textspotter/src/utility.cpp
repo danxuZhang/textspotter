@@ -80,3 +80,9 @@ auto CalcLevenshteinDistance(std::string_view s1, std::string_view s2) noexcept 
 auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point {
   return {rect.x + rect.width / 2, rect.y + rect.height / 2};
 }
+
+auto ToLower(std::string_view s) noexcept -> std::string {
+  std::string res(s);
+  std::transform(s.begin(), s.end(), res.begin(), ::tolower);
+  return res;
+}
