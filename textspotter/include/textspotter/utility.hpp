@@ -54,3 +54,5 @@ auto CalcLevenshteinDistance(std::string_view s1, std::string_view s2) noexcept 
  * @return A cv::Point representing the center of the rectangle.
  */
 auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point;
+
+auto ToLower(std::string_view s) noexcept -> std::string;
