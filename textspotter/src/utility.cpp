@@ -17,6 +17,8 @@ auto LoadImage(std::string_view image_path) -> cv::Mat {
     throw std::invalid_argument("image at path " + std::string(image_path) + "is empty");
   }
 
+  cv::resize(image, image, cv::Size(1280, 720));
+
   return image;
 }
 
@@ -32,15 +34,15 @@ auto Preprocess(const cv::Mat &image) noexcept -> cv::Mat {
 
   cv::bitwise_not(processed_image, processed_image);
 
-  cv::GaussianBlur(processed_image, processed_image, cv::Size(3, 3), 0);
+  cv::GaussianBlur(processed_image, processed_image, cv::Size(5, 5), 0);
 
-  cv::adaptiveThreshold(processed_image, processed_image, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 7, 2);
+  cv::adaptiveThreshold(processed_image, processed_image, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 5, 3);
 
   cv::fastNlMeansDenoising(processed_image, processed_image);
 
-  //  cv::imshow("processed", processed_image);
-  //  cv::waitKey();
-  //  cv::destroyAllWindows();
+  // cv::imshow("processed", processed_image);
+  // cv::waitKey();
+  // cv::destroyWindow("processed");
   return processed_image;
 }
 

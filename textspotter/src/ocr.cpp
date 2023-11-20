@@ -20,10 +20,9 @@ auto RecognizeText(const cv::Mat &image, float conf_threshold, std::optional<cv:
 
   const auto tesseract = TesseractApi();
 
-  const auto processed_image = Preprocess(image);
+  // const auto processed_image = Preprocess(image);
 
-  tesseract.api_->SetImage(processed_image.data, processed_image.size().width, processed_image.size().height,
-                           processed_image.channels(), processed_image.step1());
+  tesseract.api_->SetImage(image.data, image.size().width, image.size().height, image.channels(), image.step1());
   if (roi != std::nullopt) {
     tesseract.api_->SetRectangle(roi->x, roi->y, roi->width, roi->height);
   }
@@ -46,6 +45,13 @@ auto RecognizeText(const cv::Mat &image, float conf_threshold, std::optional<cv:
     }
 
     const char *word = it->GetUTF8Text(level);
+    if (word == nullptr) {
+      continue;
+    }
+    const std::string word_str(word);
+    if (word_str.empty()) {
+      continue;
+    }
 
     int x1, y1, x2, y2;
     it->BoundingBox(level, &x1, &y1, &x2, &y2);
