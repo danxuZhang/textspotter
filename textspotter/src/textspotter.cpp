@@ -76,25 +76,3 @@ auto DetectReadTextMultiThread(const cv::Mat &image, std::string_view model_path
 
   return results;
 }
-
-auto MatchWord(const cv::Mat &image, std::string_view target, std::string_view model_path) noexcept -> cv::Point {
-  auto is_match = [](std::string_view s1, std::string_view s2) -> bool {
-    if (s1 == s2) {
-      return true;
-    }
-
-    const int dist = CalcLevenshteinDistance(s1, s2);
-    const size_t min_len = std::min(s1.length(), s2.length());
-    return dist < 1 / 2 * min_len;
-  };
-
-  const auto &result = DetectReadTextMultiThread(image, model_path);
-  for (const auto &r : result) {
-    const auto &[text, box] = r;
-    if (is_match(target, text)) {
-      return GetRectCenter(box);
-    }
-  }
-
-  return {-1, -1};
-}

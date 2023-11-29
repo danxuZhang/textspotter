@@ -2,6 +2,7 @@
 #include <argparse/argparse.hpp>
 #include <opencv2/opencv.hpp>
 
+#include "textspotter/text_matching.hpp"
 #include "textspotter/textspotter.hpp"
 #include "textspotter/utility.hpp"
 
@@ -55,7 +56,8 @@ void find_text(const cv::Mat &image, const char *model_path) {
 }
 
 void match_word(const cv::Mat &image, const char *model_path, std::string_view target) {
-  const auto pt = MatchWord(image, target, model_path);
+  const auto result = DetectReadTextMultiThread(image, model_path, false);
+  const auto pt = MatchWord(result, target);
   fmt::println("({}, {}): {}", pt.x, pt.y, target);
   auto canvas = image.clone();
   cv::line(canvas, {0, pt.y}, {canvas.size().width, pt.y}, {0, 255, 0});

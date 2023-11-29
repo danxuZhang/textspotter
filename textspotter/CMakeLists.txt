@@ -3,6 +3,8 @@ set(SOURCE_FILES
         src/ocr.cpp
         src/utility.cpp
         src/east_detector.cpp
+        src/text_matching.cpp
+        
 )
 
 include_directories("include/")
