@@ -17,7 +17,6 @@ auto DetectReadText(const cv::Mat &image, std::string_view model_path, bool disp
   const EastTextDetector detector(model_path.data());
   const std::vector<TextDetectionResult> detection_results = detector.detect(image);
 
-  fmt::println("Fount {} texts", detection_results.size());
   const auto preprocessed = Preprocess(image);
 
   std::vector<DetectReadResult> res;
