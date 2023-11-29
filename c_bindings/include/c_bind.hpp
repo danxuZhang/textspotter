@@ -10,38 +10,57 @@ extern "C" {
 /**
  * Detects and reads text from an image file.
  *
- * This function attempts to detect and read text from the image located at the specified path.
- * The extracted texts are stored in an array, and the size of the array is updated to reflect
- * the number of texts detected.
+ * @param image_path The path to the image file.
+ * @param texts Pointer to an array of strings where the detected texts will be stored.
+ * @param size Pointer to an integer where the size (number of detected texts) will be stored.
  *
- * @param image_path A pointer to a character string representing the path to the image file.
- * @param texts A pointer to an array of character pointers, where the detected texts will be stored.
- *              The array should be pre-allocated, and this function will fill in the text values.
- * @param size A pointer to an integer that will be updated with the size of the texts array.
- * @return Returns true if the text detection and reading are successful, false otherwise.
- * @note It is the responsibility of the caller to allocate and free the memory for the texts array.
- *       Ensure the image file exists and is accessible from the given path.
+ * @return true if the text detection and reading are successful, false otherwise.
  */
 DLL_EXPORT bool detect_read_text_from_file(const char *image_path, char **texts, int *size);
 
 /**
- * Detects and reads text from an image in memory.
+ * Detects and reads text from image data in memory.
  *
- * This function attempts to detect and read text from an image data provided in memory.
- * The image data should be in a specific format as defined by the type parameter. The extracted
- * texts are stored in an array, and the size of the array is updated to reflect the number of
- * texts detected.
- *
- * @param data A pointer to the image data in memory.
+ * @param data Pointer to the image data in memory.
  * @param height The height of the image in pixels.
  * @param width The width of the image in pixels.
- * @param type An integer representing the image data type/format.
- * @param texts A pointer to an array of character pointers, where the detected texts will be stored.
- *              The array should be pre-allocated, and this function will fill in the text values.
- * @param size A pointer to an integer that will be updated with the size of the texts array.
- * @return Returns true if the text detection and reading are successful, false otherwise.
- * @note The caller is responsible for ensuring that the image data is in the correct format and
- *       for managing the memory for the texts array.
+ * @param type The type of the image data, typically representing the color depth and channels.
+ * @param texts Pointer to an array of strings where the detected texts will be stored.
+ * @param size Pointer to an integer where the size (number of detected texts) will be stored.
+ *
+ * @return true if the text detection and reading are successful, false otherwise.
  */
 DLL_EXPORT bool detect_read_text(void *data, int height, int width, int type, char **texts, int *size);
+
+/**
+ * Detects and reads text from image data in memory.
+ *
+ * @param data Pointer to the image data in memory.
+ * @param height The height of the image in pixels.
+ * @param width The width of the image in pixels.
+ * @param type The type of the image data, typically representing the color depth and channels.
+ * @param texts Pointer to an array of strings where the detected texts will be stored.
+ * @param size Pointer to an integer where the size (number of detected texts) will be stored.
+ *
+ * @return true if the text detection and reading are successful, false otherwise.
+ */
+DLL_EXPORT bool detect_read_text(void *data, int height, int width, int type, char **texts, int *size);
+
+/**
+ * Matches a specific text or phrase within the detected texts and provides its coordinates.
+ *
+ * @param size The number of detected texts.
+ * @param texts Array of strings containing detected texts.
+ * @param xs Array of x-coordinates for each text.
+ * @param ys Array of y-coordinates for each text.
+ * @param widths Array of widths for each text's bounding box.
+ * @param heights Array of heights for each text's bounding box.
+ * @param target The text or phrase to match.
+ * @param x_out Pointer to an integer where the x-coordinate of the matched text will be stored.
+ * @param y_out Pointer to an integer where the y-coordinate of the matched text will be stored.
+ *
+ * @return true if the text or phrase is found, false otherwise.
+ */
+DLL_EXPORT bool match_text(int size, char **texts, int *xs, int *ys, int *widths, int *heights, char *target,
+                           int *x_out, int *y_out);
 }

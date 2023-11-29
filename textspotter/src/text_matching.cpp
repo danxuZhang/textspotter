@@ -95,6 +95,7 @@ auto MatchWordGroups(const std::vector<DetectReadResult> &detections, const std:
     }
   }
 
+  boxes = best_sequence;
   if (best_sequence.empty()) {
     return {-1, -1};
   }
