@@ -4,7 +4,7 @@ set(SOURCE_FILES
         src/utility.cpp
         src/east_detector.cpp
         src/text_matching.cpp
-        
+        src/detect_read.cpp 
 )
 
 include_directories("include/")

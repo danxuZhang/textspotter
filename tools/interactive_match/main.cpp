@@ -2,7 +2,6 @@
 #include <argparse/argparse.hpp>
 #include <opencv2/opencv.hpp>
 
-#include "textspotter/text_matching.hpp"
 #include "textspotter/textspotter.hpp"
 #include "textspotter/utility.hpp"
 
@@ -24,11 +23,13 @@ int main(int argc, char *argv[]) {
   const auto model_path = parser.get<std::string>("--dtm");
   const auto display = parser["--display"] == true;
 
+  TextSpotter text_spotter(model_path);
   const auto image = LoadImage(image_path);
+  text_spotter.LoadImage(image);
 
   Timer timer;
   timer.Start();
-  const auto detect_read_result = DetectReadTextMultiThread(image, model_path.c_str());
+  const auto detect_read_result = text_spotter.DetectRead();
   timer.End();
 
   fmt::println("Detect and read {} texts in {} seconds", detect_read_result.size(), timer.GetElapsedSeconds());
@@ -44,12 +45,7 @@ int main(int argc, char *argv[]) {
     }
 
     target = TrimStr(target);
-    const auto tokens = SplitStr(target);
-    if (tokens.size() == 1) {
-      pt = MatchWord(detect_read_result, tokens[0]);
-    } else {
-      pt = MatchWordGroups(detect_read_result, tokens);
-    }
+    pt = text_spotter.MatchText(target);
 
     fmt::println("Found @ ({}, {})", pt.x, pt.y);
 

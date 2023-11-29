@@ -1,6 +1,6 @@
 #include "c_bind.hpp"
+#include "textspotter/detect_read.hpp"
 #include "textspotter/text_matching.hpp"
-#include "textspotter/textspotter.hpp"
 #include "textspotter/utility.hpp"
 
 auto detect_read_helper = [](const cv::Mat &image, char **texts, int *size) -> bool {

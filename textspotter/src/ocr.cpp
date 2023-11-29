@@ -20,8 +20,6 @@ auto RecognizeText(const cv::Mat &image, float conf_threshold, std::optional<cv:
 
   const auto tesseract = TesseractApi();
 
-  // const auto processed_image = Preprocess(image);
-
   tesseract.api_->SetImage(image.data, image.size().width, image.size().height, image.channels(), image.step1());
   if (roi != std::nullopt) {
     tesseract.api_->SetRectangle(roi->x, roi->y, roi->width, roi->height);

@@ -1,77 +1,43 @@
 #include "textspotter/textspotter.hpp"
 
-#include <fmt/core.h>
-#include <future>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <thread>
-
-#include "textspotter/east_detector.hpp"
-#include "textspotter/ocr.hpp"
-#include "textspotter/result_type.hpp"
+#include <opencv2/imgcodecs.hpp>
+#include "textspotter/detect_read.hpp"
+#include "textspotter/text_matching.hpp"
 #include "textspotter/utility.hpp"
 
-auto DetectReadText(const cv::Mat &image, std::string_view model_path, bool display) noexcept
-    -> std::vector<DetectReadResult> {
-  cv::Mat target = image.clone();
-  const EastTextDetector detector(model_path.data());
-  const std::vector<TextDetectionResult> detection_results = detector.detect(image);
+TextSpotter::TextSpotter(std::string_view path) : model_path_(path), image_(nullptr) {}
 
-  const auto preprocessed = Preprocess(image);
-
-  std::vector<DetectReadResult> res;
-  for (const auto &det_res : detection_results) {
-    const auto &[roi, dt_conf] = det_res;
-    const auto &ocr_results = RecognizeText(preprocessed, 0, roi);
-
-    for (const auto &ocr_res : ocr_results) {
-      const auto &[text_str, box, ocr_conf] = ocr_res;
-      res.push_back({text_str, box});
-      if (display) {
-        cv::rectangle(target, box, cv::Scalar(0, 255, 0));
-      }
-    }
-  }
-
-  if (display) {
-    cv::imshow("TextSpotter", target);
-    cv::waitKey();
-    cv::destroyAllWindows();
-  }
-
-  return res;
+auto TextSpotter::LoadImage(std::string_view path) noexcept -> void {
+  const auto image = cv::imread(path.data(), cv::IMREAD_COLOR);
+  image_ = image.empty() ? nullptr : std::make_unique<cv::Mat>(image);
 }
 
-auto DetectReadTextMultiThread(const cv::Mat &image, std::string_view model_path, bool display) noexcept
-    -> std::vector<DetectReadResult> {
-  cv::Mat target = image.clone();
-  const EastTextDetector detector(model_path.data());
-  const std::vector<TextDetectionResult> detection_results = detector.detect(image);
+auto TextSpotter::LoadImage(const cv::Mat &image) noexcept -> void {
+  image_ = image.empty() ? nullptr : std::make_unique<cv::Mat>(image.clone());
+}
 
-  const auto preprocessed = Preprocess(image);
-  std::vector<std::future<std::vector<OcrResult>>> future_results;
-  for (const auto &det_res : detection_results) {
-    const auto &[roi, dt_conf] = det_res;
-    future_results.push_back(std::async(std::launch::async, [&]() { return RecognizeText(preprocessed, 0, roi); }));
+auto TextSpotter::GetImage() const noexcept -> cv::Mat { return image_ == nullptr ? cv::Mat() : image_->clone(); }
+
+auto TextSpotter::DetectRead() noexcept -> std::vector<DetectReadResult> {
+  if (image_ == nullptr) {
+    return {};
+  }
+  det_results_ = std::move(DetectReadTextMultiThread(*image_, model_path_, false));
+  return det_results_;
+}
+
+auto TextSpotter::MatchText(std::string_view target) const noexcept -> cv::Point {
+  if (image_ == nullptr) {
+    return {-1, -1};
   }
 
-  std::vector<DetectReadResult> results;
-  for (auto &f : future_results) {
-    auto ocr_results = f.get();
-    for (const auto &res : ocr_results) {
-      const auto &[text, box, conf] = res;
-      results.push_back({text, box});
-      if (display) {
-        cv::rectangle(target, box, cv::Scalar(0, 255, 0));
-      }
-    }
+  cv::Point pt;
+  const auto tokens = SplitStr(std::string(target));
+  if (tokens.size() == 1) {
+    pt = MatchWord(det_results_, tokens[0]);
+  } else {
+    pt = MatchWordGroups(det_results_, tokens);
   }
 
-  if (display) {
-    cv::imshow("TextSpotter", target);
-    cv::waitKey();
-    cv::destroyWindow("TextSpotter");
-  }
-
-  return results;
+  return pt;
 }
