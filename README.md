@@ -2,6 +2,9 @@
 
 # TextSpotter
 
+![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5b0ccd8c880643209ed37d9fff0288d7)](https://app.codacy.com/gh/danxuZhang/textspotter/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 A Tesseract and EAST backed text detection and matching library.
 
 ## About
