@@ -1,4 +1,5 @@
 #include <fmt/core.h>
+
 #include <argparse/argparse.hpp>
 #include <opencv2/opencv.hpp>
 

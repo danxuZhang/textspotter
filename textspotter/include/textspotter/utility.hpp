@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fmt/core.h>
+
 #include <chrono>
 #include <opencv2/core/core.hpp>
 #include <string>

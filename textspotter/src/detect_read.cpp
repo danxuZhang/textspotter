@@ -1,6 +1,7 @@
 #include "textspotter/detect_read.hpp"
 
 #include <fmt/core.h>
+
 #include <future>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>

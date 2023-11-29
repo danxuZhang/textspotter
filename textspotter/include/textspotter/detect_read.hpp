@@ -3,6 +3,7 @@
 #include <opencv2/core.hpp>
 #include <string>
 #include <vector>
+
 #include "result_type.hpp"
 
 /**

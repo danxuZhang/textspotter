@@ -1,6 +1,7 @@
 #include "textspotter/textspotter.hpp"
 
 #include <opencv2/imgcodecs.hpp>
+
 #include "textspotter/detect_read.hpp"
 #include "textspotter/text_matching.hpp"
 #include "textspotter/utility.hpp"

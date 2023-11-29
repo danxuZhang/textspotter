@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <vector>
+
 #include "textspotter/utility.hpp"
 
 auto IsMatch(std::string_view s1, std::string_view s2, bool case_sensitive) noexcept -> bool {
