@@ -62,6 +62,6 @@ FetchContent_MakeAvailable(googletest)
 
 add_subdirectory(textspotter/)
 add_subdirectory(c_bindings/)
-# add_subdirectory(tools/benchmark/)
+add_subdirectory(tools/interactive_match/)
 add_subdirectory(tools/textspotter_cli/)
 add_subdirectory(tests/)

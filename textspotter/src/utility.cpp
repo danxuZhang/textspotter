@@ -127,4 +127,4 @@ static inline std::string rtrim(const std::string &s) {
 
 static inline std::string trim(const std::string &s) { return ltrim(rtrim(s)); }
 
-auto inline TrimStr(const std::string &s) noexcept -> std::string { return trim(s); }
+auto TrimStr(const std::string &s) noexcept -> std::string { return trim(s); }
