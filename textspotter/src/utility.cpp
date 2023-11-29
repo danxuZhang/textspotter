@@ -5,6 +5,24 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/photo.hpp>
 
+ScopedTimer::ScopedTimer(std::string_view name) : name_(name), start_(std::chrono::high_resolution_clock::now()) {}
+
+ScopedTimer::~ScopedTimer() {
+  const auto end = std::chrono::high_resolution_clock::now();
+  const auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end - start_);
+  fmt::println("Duration of timer {}: {}", name_, time_span.count());
+}
+
+Timer::Timer() : start_(std::chrono::high_resolution_clock::now()) {}
+
+auto Timer::Start() noexcept -> void { start_ = std::chrono::high_resolution_clock::now(); }
+
+auto Timer::End() noexcept -> void { end_ = std::chrono::high_resolution_clock::now(); }
+
+auto Timer::GetElapsedSeconds() const noexcept -> int {
+  return std::chrono::duration_cast<std::chrono::duration<double>>(end_ - start_).count();
+}
+
 auto LoadImage(const char *image_path) -> cv::Mat { return LoadImage(std::string_view(image_path)); }
 
 auto LoadImage(std::string_view image_path) -> cv::Mat {
@@ -79,8 +97,16 @@ auto CalcLevenshteinDistance(std::string_view s1, std::string_view s2) noexcept 
   return matrix[l1][l2];
 }
 
-auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point {
-  return {rect.x + rect.width / 2, rect.y + rect.height / 2};
+auto SplitStr(const std::string &s) noexcept -> std::vector<std::string> {
+  std::istringstream iss(s);
+  std::vector<std::string> tokens;
+  std::string token;
+
+  while (iss >> token) {
+    tokens.push_back(token);
+  }
+
+  return tokens;
 }
 
 auto ToLower(std::string_view s) noexcept -> std::string {
@@ -88,3 +114,17 @@ auto ToLower(std::string_view s) noexcept -> std::string {
   std::transform(s.begin(), s.end(), res.begin(), ::tolower);
   return res;
 }
+
+static inline std::string ltrim(const std::string &s) {
+  size_t start = s.find_first_not_of(" \t\n\r\f\v");
+  return (start == std::string::npos) ? "" : s.substr(start);
+}
+
+static inline std::string rtrim(const std::string &s) {
+  size_t end = s.find_last_not_of(" \t\n\r\f\v");
+  return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+
+static inline std::string trim(const std::string &s) { return ltrim(rtrim(s)); }
+
+auto inline TrimStr(const std::string &s) noexcept -> std::string { return trim(s); }

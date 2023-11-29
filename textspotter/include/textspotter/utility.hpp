@@ -7,16 +7,26 @@
 
 class ScopedTimer {
  public:
-  explicit ScopedTimer(const char *name = "") : name_(name), start_(std::chrono::high_resolution_clock::now()) {}
-  ~ScopedTimer() {
-    const auto end = std::chrono::high_resolution_clock::now();
-    const auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end - start_);
-    fmt::println("Duration of timer {}: {}", name_, time_span.count());
-  }
+  explicit ScopedTimer(std::string_view name = "");
+  ~ScopedTimer();
 
  private:
   std::string_view name_;
   std::chrono::high_resolution_clock::time_point start_;
+};
+
+class Timer {
+ public:
+  Timer();
+  ~Timer() = default;
+  auto Start() noexcept -> void;
+  auto End() noexcept -> void;
+
+  auto GetElapsedSeconds() const noexcept -> int;
+
+ private:
+  std::chrono::high_resolution_clock::time_point start_;
+  std::chrono::high_resolution_clock::time_point end_;
 };
 
 /**
@@ -53,6 +63,12 @@ auto CalcLevenshteinDistance(std::string_view s1, std::string_view s2) noexcept 
  * @param rect The cv::Rect structure from which to calculate the center.
  * @return A cv::Point representing the center of the rectangle.
  */
-auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point;
+inline auto GetRectCenter(const cv::Rect &rect) noexcept -> cv::Point {
+  return {rect.x + rect.width / 2, rect.y + rect.height / 2};
+}
 
 auto ToLower(std::string_view s) noexcept -> std::string;
+
+auto SplitStr(const std::string &s) noexcept -> std::vector<std::string>;
+
+auto TrimStr(const std::string &s) noexcept -> std::string;
