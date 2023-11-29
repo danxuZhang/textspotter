@@ -64,8 +64,8 @@ cv::Point CalculateCenter(const std::vector<cv::Rect> &sequence) {
   return cv::Point(x, y);
 }
 
-auto MatchWordGroups(const std::vector<DetectReadResult> &detections, const std::vector<std::string> &target,
-                     std::vector<cv::Rect> &boxes) noexcept -> cv::Point {
+auto MatchWordGroups(const std::vector<DetectReadResult> &detections, const std::vector<std::string> &target) noexcept
+    -> cv::Point {
   std::map<std::string, std::vector<cv::Rect>> mp;
   for (const auto &res : detections) {
     mp[res.text_].push_back(res.bounding_box_);
@@ -95,7 +95,6 @@ auto MatchWordGroups(const std::vector<DetectReadResult> &detections, const std:
     }
   }
 
-  boxes = best_sequence;
   if (best_sequence.empty()) {
     return {-1, -1};
   }

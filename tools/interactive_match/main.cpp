@@ -48,8 +48,7 @@ int main(int argc, char *argv[]) {
     if (tokens.size() == 1) {
       pt = MatchWord(detect_read_result, tokens[0]);
     } else {
-      std::vector<cv::Rect> boxes;
-      pt = MatchWordGroups(detect_read_result, tokens, boxes);
+      pt = MatchWordGroups(detect_read_result, tokens);
     }
 
     fmt::println("Found @ ({}, {})", pt.x, pt.y);

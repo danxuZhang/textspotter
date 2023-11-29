@@ -60,8 +60,7 @@ DLL_EXPORT bool match_text(int size, char **texts, int *xs, int *ys, int *widths
     tokens.push_back(token);
   }
 
-  std::vector<cv::Rect> boxes;
-  const auto pt = MatchWordGroups(detections, tokens, boxes);
+  const auto pt = MatchWordGroups(detections, tokens);
   *x_out = pt.x;
   *y_out = pt.y;
   if (pt == cv::Point{-1, -1}) {
