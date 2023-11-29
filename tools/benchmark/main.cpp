@@ -7,7 +7,7 @@
 #include "textspotter/utility.hpp"
 
 int main(int argc, char *argv[]) {
-  argparse::ArgumentParser parser("TextSpotter::InteractiveMatch");
+  argparse::ArgumentParser parser("TextSpotter::Benchmark");
   parser.add_argument("image").help("path to image").required();
   parser.add_argument("--dtm").help("path to east detection model").required();
 
