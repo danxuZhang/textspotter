@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15...3.26)
+cmake_minimum_required(VERSION 3.14)
 
 project(
         textspotter
@@ -6,24 +6,25 @@ project(
         LANGUAGES CXX)
 set(THIS textspotter)
 
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# Check if pkg-config is available
-find_package(PkgConfig)
 
-# If pkg-config is found, use pkg_search_module
-if (PkgConfig_FOUND)
+# Option to use pkg-config
+option(use_pkgconfig "Use pkg-config to find packages" OFF)
+
+if (use_pkgconfig)
+    # Check if pkg-config is available and use it
+    find_package(PkgConfig REQUIRED)
     pkg_search_module(Tesseract REQUIRED tesseract)
     pkg_search_module(LEPTONICA REQUIRED lept)
-else ()
-    # If pkg-config is not found, use find_package
+else()
+    # Use find_package
     find_package(Leptonica REQUIRED)
     find_package(Tesseract REQUIRED)
-    IF (WIN32)
+    if (WIN32)
         link_directories("C:\\Program Files (x86)\\tesseract\\lib")
-    ENDIF ()
-endif ()
+    endif()
+endif()
 
 find_package(OpenCV REQUIRED)
 
@@ -44,7 +45,6 @@ FetchContent_Declare(
         GIT_TAG 10.1.1
 )
 FetchContent_MakeAvailable(fmt)
-
 
 include_directories(
         ${OpenCV_INCLUDE_DIRS}
