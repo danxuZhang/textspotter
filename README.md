@@ -42,15 +42,20 @@ Building this library requires:
 
 ### Installation
 
-For macOS and Linux:
+If all dependencies are installed and setup properly, run: 
 
 ```bash
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j`nproc`
+cmake --build .
 ```
 
-For Windows, a separate guide using Visual Studio can be found here.
+For more detailed setup guide including dependencies: 
+
+[Windows Setup Guide (vcpkg)](./doc/windows-vcpkg.md)  
+
+[Windows Setup Guide (build from source)](./doc/windows-build.md)
+
 
 ## Command Line Usage
 
