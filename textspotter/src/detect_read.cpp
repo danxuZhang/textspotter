@@ -12,6 +12,16 @@
 #include "textspotter/result_type.hpp"
 #include "textspotter/utility.hpp"
 
+auto inline ExpandROI(const cv::Rect &rect, int tolerance, int image_width, int image_height) -> cv::Rect {
+  // const int x = rect.x;
+  const int x = std::max(rect.x - tolerance, 0);
+  const int y = std::max(rect.y - tolerance, 0);
+  // const int width = rect.width;
+  const int width = (x + rect.width + tolerance <= image_width) ? (rect.width + 2 * tolerance) : (image_width - x);
+  const int height = (y + rect.height + tolerance <= image_height) ? (rect.height + 2 * tolerance) : (image_height - y);
+  return {x, y, width, height};
+}
+
 auto DetectReadText(const cv::Mat &image, std::string_view model_path, bool display) noexcept
     -> std::vector<DetectReadResult> {
   cv::Mat target = image.clone();
@@ -23,7 +33,8 @@ auto DetectReadText(const cv::Mat &image, std::string_view model_path, bool disp
   std::vector<DetectReadResult> res;
   for (const auto &det_res : detection_results) {
     const auto &[roi, dt_conf] = det_res;
-    const auto &ocr_results = RecognizeText(preprocessed, 0, roi);
+    const auto &ocr_results =
+        RecognizeText(preprocessed, 0, ExpandROI(roi, 5, image.size().width, image.size().height));
 
     for (const auto &ocr_res : ocr_results) {
       const auto &[text_str, box, ocr_conf] = ocr_res;
@@ -53,7 +64,9 @@ auto DetectReadTextMultiThread(const cv::Mat &image, std::string_view model_path
   std::vector<std::future<std::vector<OcrResult>>> future_results;
   for (const auto &det_res : detection_results) {
     const auto &[roi, dt_conf] = det_res;
-    future_results.push_back(std::async(std::launch::async, [&]() { return RecognizeText(preprocessed, 0, roi); }));
+    future_results.push_back(std::async(std::launch::async, [&]() {
+      return RecognizeText(preprocessed, 0, ExpandROI(roi, 5, image.size().width, image.size().height));
+    }));
   }
 
   std::vector<DetectReadResult> results;
