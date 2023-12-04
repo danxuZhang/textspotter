@@ -6,7 +6,8 @@
 #include "textspotter/text_matching.hpp"
 #include "textspotter/utility.hpp"
 
-TextSpotter::TextSpotter(std::string_view path) : model_path_(path), image_(nullptr) {}
+TextSpotter::TextSpotter(std::string_view path, bool enable_multi_thread)
+    : model_path_(path), image_(nullptr), enable_multi_thread_(enable_multi_thread) {}
 
 auto TextSpotter::LoadImage(std::string_view path) noexcept -> void {
   const auto image = cv::imread(path.data(), cv::IMREAD_COLOR);
@@ -23,7 +24,11 @@ auto TextSpotter::DetectRead() noexcept -> std::vector<DetectReadResult> {
   if (image_ == nullptr) {
     return {};
   }
-  det_results_ = std::move(DetectReadTextMultiThread(*image_, model_path_, false));
+  if (enable_multi_thread_) {
+    det_results_ = std::move(DetectReadTextMultiThread(*image_, model_path_, false));
+  } else {
+    det_results_ = std::move(DetectReadText(*image_, model_path_, false));
+  }
   return det_results_;
 }
 

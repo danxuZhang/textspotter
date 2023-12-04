@@ -9,7 +9,7 @@
 
 class TextSpotter {
  public:
-  explicit TextSpotter(std::string_view model_path = "frozen_east_text_detection.pb");
+  explicit TextSpotter(std::string_view model_path = "frozen_east_text_detection.pb", bool enable_multi_thread = true);
   ~TextSpotter() = default;
 
   auto LoadImage(std::string_view path) noexcept -> void;
@@ -20,6 +20,7 @@ class TextSpotter {
   auto MatchText(std::string_view target) const noexcept -> cv::Point;
 
  private:
+  bool enable_multi_thread_;
   std::string model_path_;
   std::unique_ptr<cv::Mat> image_;
   std::vector<DetectReadResult> det_results_;

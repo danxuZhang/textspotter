@@ -10,6 +10,7 @@ int main(int argc, char *argv[]) {
   argparse::ArgumentParser parser("TextSpotter::InteractiveMatch");
   parser.add_argument("image").help("path to image").required();
   parser.add_argument("--dtm").help("path to east detection model").required();
+  parser.add_argument("--multi-thread").help("enable multi-thread").flag();
   parser.add_argument("--display").help("display image after each matching").flag();
 
   try {
@@ -23,11 +24,17 @@ int main(int argc, char *argv[]) {
   const auto image_path = parser.get<std::string>("image");
   const auto model_path = parser.get<std::string>("--dtm");
   const auto display = parser["--display"] == true;
+  const auto enable_multi_thread = parser["--multi-thread"] == true;
 
-  TextSpotter text_spotter(model_path);
+  if (enable_multi_thread) {
+    fmt::println("Multi-threading enabled");
+  }
+
+  TextSpotter text_spotter(model_path, enable_multi_thread);
   const auto image = LoadImage(image_path);
   text_spotter.LoadImage(image);
 
+  fmt::println("Start detecting...");
   Timer timer;
   timer.Start();
   const auto detect_read_result = text_spotter.DetectRead();
