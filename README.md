@@ -66,8 +66,10 @@ A few command line tools are provided:
 Detect all texts in a photo.
 
 ```bash
-cd build/
+# detect with single thread
 ./tools/DetectText --dtm /path/to/frozen_east_text_detection.pb /path/to/image.png
+# detect with multi thread
+./tools/DetectText --dtm /path/to/frozen_east_text_detection.pb /path/to/image.png --multi-thread
 ```
 
 ### Interactive Match Text
@@ -77,6 +79,8 @@ Detect and read all texts in a photo, interactively match user input text.
 ``` bash
 # display matched location after each call
 ./tools/InteractiveMatch  --dtm /path/to/frozen_east_text_detection.pb /path/to/image.png --display
+# use multi-thread
+./tools/InteractiveMatch  --dtm /path/to/frozen_east_text_detection.pb /path/to/image.png --multi-thread
 # no display
 ./tools/InteractiveMatch  --dtm /path/to/frozen_east_text_detection.pb /path/to/image.png
 ```
@@ -84,7 +88,7 @@ Detect and read all texts in a photo, interactively match user input text.
 Example output:
 
 ``` text
-Detect and read 43 texts in 25 seconds
+Detect and read 43 texts in 5 seconds
 
 Start interactive matching: (type \quit to quit)   
 
@@ -94,3 +98,16 @@ Found @ (203, 143)
 Found @ (1012, 450) 
 > \quit
 ```
+
+### Benchmark
+
+A utility tool for comparing performance of single-thread and multi-thread text detection and recognition performance.
+
+``` bash
+./tools/benchmark/Benchmark --dtm /path/to/frozen_east_text_detection.pb /path/to/image.png 
+
+Single-thread detect and read 45 words in 3 seconds
+Multi-thread detect and read 45 words in 2 seconds
+No mismatch between single and multi thread algo!
+```
+
