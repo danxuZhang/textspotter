@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     freq[r.text_]--;
   }
 
-  fmt::println("Sinle-thread detect and read {} words in {} seconds", res1.size(),
+  fmt::println("Single-thread detect and read {} words in {} seconds", res1.size(),
                single_thread_timer.GetElapsedSeconds());
   fmt::println("Multi-thread detect and read {} words in {} seconds", res2.size(),
                multi_thread_timer.GetElapsedSeconds());
