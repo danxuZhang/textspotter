@@ -21,9 +21,6 @@ else()
     # Use find_package
     find_package(Leptonica REQUIRED)
     find_package(Tesseract REQUIRED)
-    if (WIN32)
-        link_directories("C:\\Program Files (x86)\\tesseract\\lib")
-    endif()
 endif()
 
 find_package(OpenCV REQUIRED)
