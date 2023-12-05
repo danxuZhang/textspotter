@@ -8,7 +8,9 @@
 
 ## Build Dependencies
 
-1. Download the source code of latest Leptonica and Tesseract release. Here we use [leptonica 1.83.1](https://github.com/DanBloomberg/leptonica/releases/tag/1.83.1) an [tesseract 5.3.3](https://github.com/tesseract-ocr/tesseract/releases/tag/5.3.3).
+1. Download the source code of latest Leptonica and Tesseract release. Here we
+   use [leptonica 1.83.1](https://github.com/DanBloomberg/leptonica/releases/tag/1.83.1)
+   an [tesseract 5.3.3](https://github.com/tesseract-ocr/tesseract/releases/tag/5.3.3).
 
 2. Extract the source to disk (`~\Documents\third_party\` for example).
 
@@ -42,7 +44,7 @@
 
 4. Install leptonica
 
-    By default, installation prefix is `C:\Program Fils (x86)\`, thus running powershell as administrator is required.
+   By default, installation prefix is `C:\Program Fils (x86)\`, thus running powershell as administrator is required.
 
     ```ps1
     cmake --install cmake-build-release
@@ -64,9 +66,10 @@
     cmake -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -DSW_BUILD=ON -DOPENMP_BUILD=ON
     ```
 
-    Note:
+   Note:
 
-    * If cmake complains about cannot find leptonica, add `-DLeptonica_DIR=/path/to/leptonica/cmake` to the configuratio command
+    * If cmake complains about cannot find leptonica, add `-DLeptonica_DIR=/path/to/leptonica/cmake` to the configuratio
+      command
 
 3. Build tesseract
 
@@ -77,7 +80,7 @@
 
 4. Install tesseract
 
-    Similar to leptonica, installing to default prefix requires running powershell as administrator.
+   Similar to leptonica, installing to default prefix requires running powershell as administrator.
 
     ```ps1
     cmake --install cmake-build-release
@@ -106,11 +109,11 @@
     cmake .. 
     ```
 
-If cmake cannot find package like OpenCV or Tesseract, add their respective path to cmake arguments like this:
+   If cmake cannot find package like OpenCV or Tesseract, add their respective path to cmake arguments like this:
 
-```ps1
-cmake .. -DOpnCV_DIR="C:\opencv\build\x64\vc16\lib" -DTesseract_DIR="C:\Program Files(X86)\tesseract\lib\cmake"
-```
+   ```ps1
+   cmake .. -DOpnCV_DIR="C:\opencv\build\x64\vc16\lib" -DTesseract_DIR="C:\Program Files(X86)\tesseract\lib\cmake"
+   ```
 
 4. Build textspotter
 
@@ -126,51 +129,7 @@ cmake .. -DOpnCV_DIR="C:\opencv\build\x64\vc16\lib" -DTesseract_DIR="C:\Program 
 
 3. Add configurations `x64-Release`.
 
-4. Similar to powershell build, if package is not found, go to `CMake Settings` > `Command arguments` > `CMake command arguments` and add package dir manually.
+4. Similar to powershell build, if package is not found, go
+   to `CMake Settings` > `Command arguments` > `CMake command arguments` and add package dir manually.
 
 5. Click `Build` > `Build All` on the top menu bar to build all target.
-
-## Running Command Line Tools
-
-### Running from terminal
-
-Navigate to the build directory, go to `tools/` and can find respective applications in their folders.
-
-Example usage:
-
-```ps1
-# run interative match to match text in the photo interactively
-# to display matching result after each step, add --display flag
-.\interactive_match\InteractiveMatch.exe --dtm /path/to/frozen_east_text_detection.pb /path/to/image --display
-# find all texts on the photo
-
-.\detect_text\DetectText.exe --dtm /path/to/frozen_east_text_detection.pb /path/to/image
-
-# run benchmark to compare single and multi thread performance
-.\benchmark\Benchmark.exe --dtm /path/to/frozen_east_text_detection.pb /path/to/image
-```
-
-### Running from Visual Studio
-
-1. Open project in Visual Studio, select `x64-Release` build type, and select a target from the dropdown list, `InteractiveMatch.exe` for example.
-2. Go to `Debug` > `Debug and Launch Settings for xxx` on the top menu bar.
-3. Add arguments to the `launch.vs.json` file. For example:
-
-    ```json
-    {
-        "version": "xxx",
-        "configurations": [
-            {
-                "type": "default",
-                "project": "CMakeLists.txt",
-                "projectTarget": "InteractiveMatch.exe (tools\\interactive_match\\InteractiveMatch.exe)",
-                "name": "Interactive Match",
-                "args": [
-                    "--dtm \\path\\to\\frozen_east_text_detection.pb \\path\\to\\image --display"
-                ]
-            }
-        ]
-    }
-    ```
-
-4. Click the arrow on the top bar to run.

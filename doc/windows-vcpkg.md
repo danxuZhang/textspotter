@@ -1,6 +1,8 @@
 # Windows Setup with vcpkg
 
-[vcpkg](https://vcpkg.io/en/) is a free C/C++ package manager for acquiring and managing libraries. Choose from over 1500 open source libraries to download and build in a single step or add your own private libraries to simplify your build process. Maintained by the Microsoft C++ team and open source contributors.
+[vcpkg](https://vcpkg.io/en/) is a free C/C++ package manager for acquiring and managing libraries. Choose from over
+1500 open source libraries to download and build in a single step or add your own private libraries to simplify your
+build process. Maintained by the Microsoft C++ team and open source contributors.
 
 ## Setup vcpkg
 
@@ -31,6 +33,8 @@ For simplicity and easier typing, we install vcpkg in `C:\vcpkg`.
 
 ## Install tesseract with vcpkg
 
+(This may take some time)
+
 ```ps1
 .\vcpkg.exe install tesseract --triplet x64-windows
 ```
@@ -44,8 +48,29 @@ cmake --build build
 
 ## Use vcpkg installed tesseract in Visual Studio
 
-Add `cMakeToolchain` setting to cmake preset json file.
+Add `cmakeToolchain` setting to cmake preset json file.
 
 ``` json
 "cmakeToolchain": "C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+```
+
+An example `CMakeSettings.json`:
+
+```json
+{
+  "configurations": [
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeToolchain": "C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [
+        "msvc_x64_x64"
+      ]
+    }
+  ]
+}
 ```
