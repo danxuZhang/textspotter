@@ -155,3 +155,176 @@ Single-thread detect and read 45 words in 3 seconds
 Multi-thread detect and read 45 words in 2 seconds
 No mismatch between single and multi thread algo!
 ```
+
+## API
+
+### Data type
+
+```c++
+/**
+ * @struct DetectReadResult
+ * @brief Represents the result of a combined text detection and reading operation.
+ *
+ * @details This structure is used to store the result of operations where text is both detected and read,
+ * storing the text and its location within the image.
+ */
+struct DetectReadResult {
+  /**
+   * @brief The text detected and read from the image.
+   */
+  std::string text_;
+
+  /**
+   * @brief The bounding box of the detected and read text within the image.
+   */
+  cv::Rect bounding_box_;
+};
+```
+
+### Detect and recognize text (`detect_read.hpp`)
+
+#### Detect and recognize text using single thread
+
+```c++
+/**
+ * @function DetectReadText
+ * @brief Detects and reads text from an image using a specified model.
+ *
+ * @param image The image (cv::Mat) from which text is to be detected and read.
+ * @param model_path The path to the EAST model file. Defaults to "frozen_east_text_detection.pb".
+ * @param display A flag indicating whether to display the detection results. Defaults to false.
+ * @return A vector of DetectReadResult, each containing the detected and read text along with its bounding box.
+ */
+auto DetectReadText(const cv::Mat &image, std::string_view model_path = "frozen_east_text_detection.pb",
+                    bool display = false) noexcept -> std::vector<DetectReadResult>;
+```
+
+#### Detect and recognize text using multiple thread(implemented with c++ async)
+
+```c++
+/**
+ * @function DetectReadTextMultiThread
+ * @brief Detects and reads text from an image using a specified model, employing multi-threading for improved performance.
+ *
+ * @param image The image (cv::Mat) from which text is to be detected and read.
+ * @param model_path The path to the EAST model file. Defaults to "frozen_east_text_detection.pb".
+ * @param display A flag indicating whether to display the detection results. Defaults to false.
+ * @return A vector of DetectReadResult, each containing the detected and read text along with its bounding box.
+ */
+auto DetectReadTextMultiThread(const cv::Mat &image, std::string_view model_path = "frozen_east_text_detection.pb",
+                               bool display = false) noexcept -> std::vector<DetectReadResult>;
+
+```
+
+### Match Text (`text_matching.hpp`)
+
+#### Determine if two words matches
+
+```c++
+/**
+ * @brief Compares two strings for a match, optionally case-sensitive.
+ *
+ * @param s1 The first string for comparison.
+ * @param s2 The second string for comparison.
+ * @param case_sensitive Whether to perform a case-sensitive comparison (default: false).
+ * @return True if the strings match (or partially match based on case sensitivity), false otherwise.
+ */
+auto IsMatch(std::string_view s1, std::string_view s2, bool case_sensitive = false) noexcept -> bool;
+```
+
+#### Match a single target word and finds its center
+
+```c++
+/**
+ * @brief Matches a target word in the list of text detections and returns its position.
+ *
+ * @param detections A vector of DetectReadResult objects representing detected and recognized text regions.
+ * @param target The target word to match.
+ * @return The position of the matched word as a cv::Point.
+ */
+auto MatchWord(const std::vector<DetectReadResult> &detections, std::string_view target) noexcept -> cv::Point;
+```
+
+#### Match a group of words and find their center
+
+```c++
+/**
+ * @brief Matches a list of target words in the list of text detections and finds their center.
+ *
+ * @param detections A vector of DetectReadResult objects representing detected and recognized text regions.
+ * @param target A vector of target words to match.
+ * @return The position of the center of the target list as a cv::Point.
+ */
+auto MatchWordGroups(const std::vector<DetectReadResult> &detections, const std::vector<std::string> &target) noexcept
+    -> cv::Point;
+```
+
+### TextSpotter (`textspotter.hpp`)
+
+Combines detect, recognize and matching functions.
+
+#### Load image
+
+```c++
+/**
+ * @brief Loads an image from the specified file path.
+ *
+ * @param path The file path to the image.
+ */
+auto LoadImage(std::string_view path) noexcept -> void;
+
+/**
+ * @brief Loads an image from a provided OpenCV Mat object.
+ *
+ * @param image An OpenCV Mat representing the image.
+ */
+auto LoadImage(const cv::Mat &image) noexcept -> void;
+```
+
+#### Get Image
+
+```c++
+/**
+ * @brief Gets the loaded image.
+ *
+ * @return The loaded image as an OpenCV Mat.
+ */
+auto GetImage() const noexcept -> cv::Mat;
+```
+
+#### Detect and read
+
+``` c++
+/**
+ * @brief Detects and reads text in the loaded image.
+ *
+ * @return A vector of DetectReadResult objects representing detected and recognized text regions.
+ */
+auto DetectRead() noexcept -> std::vector<DetectReadResult>;
+```
+
+``` c++
+/**
+ * @brief Matches a target text in the loaded image and returns its position.
+ *
+ * @param target The target text to match.
+ * @return The position of the matched text as a cv::Point.
+ */
+auto MatchText(std::string_view target) const noexcept -> cv::Point;
+```
+
+### Example Usage
+
+```c++
+// Create a TextSpotter object with default settings.
+TextSpotter textSpotter;
+
+// Load an image from a file.
+textSpotter.LoadImage("image.jpg");
+
+// Detect and read text in the loaded image.
+std::vector<DetectReadResult> results = textSpotter.DetectRead();
+
+// Match a target text in the image.
+cv::Point matchPosition = textSpotter.MatchText("Target Text");
+```
