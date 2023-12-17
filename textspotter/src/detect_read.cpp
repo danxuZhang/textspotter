@@ -1,6 +1,7 @@
 #include "textspotter/detect_read.hpp"
 
 #include <fmt/core.h>
+#include <omp.h>
 
 #include <future>
 #include <opencv2/highgui.hpp>
@@ -31,6 +32,7 @@ auto DetectReadText(const cv::Mat &image, std::string_view model_path, bool disp
   const auto preprocessed = Preprocess(image);
 
   std::vector<DetectReadResult> res;
+#pragma omp parallel for schedule(dynamic)
   for (const auto &det_res : detection_results) {
     const auto &[roi, dt_conf] = det_res;
     const auto &ocr_results =

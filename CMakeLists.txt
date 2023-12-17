@@ -13,6 +13,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(use_pkgconfig "Use pkg-config to find packages" OFF)
 # Option to build tests
 option(build_test "Build Tests" OFF)
+# Option to use openmp
+option(enable_omp "Enable OpenMP support" OFF)
 
 if (use_pkgconfig)
     # Check if pkg-config is available and use it
@@ -26,6 +28,10 @@ else ()
 endif ()
 
 find_package(OpenCV REQUIRED)
+
+if (enable_omp)
+    find_package(OpenMP)
+endif ()
 
 include(FetchContent)
 
